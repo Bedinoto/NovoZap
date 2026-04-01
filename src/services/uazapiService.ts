@@ -9,8 +9,9 @@ export class UazapiService {
   }
 
   private get client() {
+    const baseUrl = this.config.baseUrl.replace(/\/$/, '');
     return axios.create({
-      baseURL: this.config.baseUrl,
+      baseURL: baseUrl,
       headers: {
         'apikey': this.config.apiKey,
         'Content-Type': 'application/json'
@@ -36,7 +37,12 @@ export class UazapiService {
   async fetchInstances() {
     try {
       const response = await this.client.get('/instance/fetchInstances');
-      return response.data;
+      // Evolution API can return an array or an object with an instances property
+      const data = response.data;
+      if (Array.isArray(data)) return data;
+      if (data && Array.isArray(data.instances)) return data.instances;
+      if (data && typeof data === 'object') return [data]; // Single instance case
+      return [];
     } catch (error) {
       console.error('Error fetching instances:', error);
       throw error;

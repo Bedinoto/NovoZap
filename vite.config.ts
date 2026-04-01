@@ -9,6 +9,8 @@ export default defineConfig(({mode}) => {
     plugins: [react(), tailwindcss()],
     define: {
       'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
+      'process.env.UAZAPI_BASE_URL': JSON.stringify(env.UAZAPI_BASE_URL || 'https://free.uazapi.com'),
+      'process.env.UAZAPI_ADMIN_TOKEN': JSON.stringify(env.UAZAPI_ADMIN_TOKEN || 'ZaW1qwTEkuq7Ub1cBUuyMiK5bNSu3nnMQ9lh7klElc2clSRV8t'),
     },
     resolve: {
       alias: {

@@ -20,8 +20,8 @@ export default function App() {
   const [messages, setMessages] = React.useState<Message[]>([]);
   const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
   const [uazapiConfig, setUazapiConfig] = React.useState<UazapiConfig>({
-    baseUrl: 'https://api.uazapi.com',
-    apiKey: '',
+    baseUrl: process.env.UAZAPI_BASE_URL || 'https://free.uazapi.com',
+    apiKey: process.env.UAZAPI_ADMIN_TOKEN || 'ZaW1qwTEkuq7Ub1cBUuyMiK5bNSu3nnMQ9lh7klElc2clSRV8t',
     instanceId: ''
   });
 

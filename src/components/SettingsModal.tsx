@@ -14,6 +14,8 @@ export default function SettingsModal({ isOpen, onClose, config, onSave }: Setti
   const [formData, setFormData] = React.useState<UazapiConfig>(config);
   const [status, setStatus] = React.useState<string>('unknown');
   const [loading, setLoading] = React.useState(false);
+  const [instances, setInstances] = React.useState<any[]>([]);
+  const [showInstanceList, setShowInstanceList] = React.useState(false);
 
   React.useEffect(() => {
     setFormData(config);
@@ -31,6 +33,24 @@ export default function SettingsModal({ isOpen, onClose, config, onSave }: Setti
       setStatus(res.instance.state || 'disconnected');
     } catch (error) {
       setStatus('error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchInstances = async () => {
+    if (!formData.apiKey || !formData.baseUrl) {
+      alert('Por favor, preencha a Base URL e a API Key primeiro.');
+      return;
+    }
+    setLoading(true);
+    try {
+      const uazapi = new UazapiService(formData);
+      const res = await uazapi.fetchInstances();
+      setInstances(res || []);
+      setShowInstanceList(true);
+    } catch (error) {
+      alert('Erro ao buscar instâncias. Verifique a URL e a Key.');
     } finally {
       setLoading(false);
     }
@@ -134,9 +154,18 @@ export default function SettingsModal({ isOpen, onClose, config, onSave }: Setti
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-              <Shield className="w-4 h-4" />
-              Instance ID
+            <label className="text-sm font-medium text-gray-700 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Shield className="w-4 h-4" />
+                Instance ID
+              </div>
+              <button 
+                type="button"
+                onClick={fetchInstances}
+                className="text-[10px] text-emerald-600 hover:underline font-bold"
+              >
+                Listar Instâncias
+              </button>
             </label>
             <input
               type="text"
@@ -147,6 +176,39 @@ export default function SettingsModal({ isOpen, onClose, config, onSave }: Setti
               required
             />
           </div>
+
+          {showInstanceList && instances.length > 0 && (
+            <div className="mt-2 p-2 bg-gray-50 rounded-lg border max-h-32 overflow-y-auto">
+              <p className="text-[10px] font-bold text-gray-400 mb-2 uppercase">Selecione uma instância:</p>
+              <div className="grid grid-cols-1 gap-1">
+                {instances.map((item: any) => {
+                  const inst = item.instance || item;
+                  const id = inst.instanceId || inst.id;
+                  const name = inst.instanceName || inst.name;
+                  const status = inst.status || inst.state;
+                  
+                  return (
+                    <button
+                      key={id}
+                      type="button"
+                      onClick={() => {
+                        setFormData({ ...formData, instanceId: name });
+                        setShowInstanceList(false);
+                      }}
+                      className="text-left px-3 py-1.5 text-xs hover:bg-emerald-50 rounded border border-transparent hover:border-emerald-200 transition flex justify-between items-center"
+                    >
+                      <span className="font-medium">{name}</span>
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
+                        status === 'open' ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'
+                      }`}>
+                        {status}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           <div className="pt-4 flex gap-3">
             <button
