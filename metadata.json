@@ -1,0 +1,5 @@
+{
+  "name": "Uazapi WhatsApp Multi-Agent",
+  "description": "Plataforma de multi-atendimento para WhatsApp utilizando a API Cloud Uazapi.",
+  "requestFramePermissions": []
+}
