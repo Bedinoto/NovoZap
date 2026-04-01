@@ -1,4 +1,4 @@
-import { Chat, Message, Agent } from './types';
+import { Chat, Message, Agent } from '../types';
 
 // In-memory mock data for demo since Firebase was declined
 let chats: Chat[] = [
